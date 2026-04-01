@@ -14,7 +14,7 @@ WORKDIR /src
 # Esto ayuda a que el comando 'restore' sea más rápido si no cambian las dependencias
 COPY ["LingNova API/LingNova API.csproj", "LingNova API/"]
 COPY ["LingNova.Core/LingNova.Core.csproj", "LingNova.Core/"]
-COPY ["LingNova.Infreaestructure/LingNova.Infreaestructure.csproj", "LingNova.Infreaestructure/"]
+COPY ["LingNova.Infrastructure/LingNova.Infrastructure.csproj", "LingNova.Infrastructure/"]
 
 # 2. Restauramos las dependencias
 RUN dotnet restore "LingNova API/LingNova API.csproj"

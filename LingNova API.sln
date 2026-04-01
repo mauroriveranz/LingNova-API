@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LingNova API", "LingNova AP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LingNova.Core", "LingNova.Core\LingNova.Core.csproj", "{0F56895C-E0DF-4A0C-9D9C-36A8B041E849}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LingNova.Infreaestructure", "LingNova.Infreaestructure\LingNova.Infreaestructure.csproj", "{58075C84-7BFB-425A-875E-4C9DC41D120C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LingNova.Infrastructure", "LingNova.Infreaestructure\LingNova.Infrastructure.csproj", "{58075C84-7BFB-425A-875E-4C9DC41D120C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0F56895C-E0DF-4A0C-9D9C-36A8B041E849} = {0F56895C-E0DF-4A0C-9D9C-36A8B041E849}
 	EndProjectSection
