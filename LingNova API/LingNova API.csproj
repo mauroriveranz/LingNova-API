@@ -27,7 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LingNova.Core\LingNova.Core.csproj" />
-    <ProjectReference Include="..\LingNova.Infreaestructure\LingNova.Infrastructure.csproj" />
+    <ProjectReference Include="..\LingNova.Infrastructure\LingNova.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
