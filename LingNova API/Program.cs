@@ -38,7 +38,7 @@ namespace LingNova_API
                 {
                     policy.AllowAnyOrigin()
                     .AllowAnyMethod()
-                    .AllowAnyOrigin();
+                    .AllowAnyHeader();
                 });
             });
 
