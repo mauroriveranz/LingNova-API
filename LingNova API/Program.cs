@@ -78,7 +78,7 @@ namespace LingNova_API
             
 
             app.UseHttpsRedirection();
-
+            app.UseCors("CorsPolicy");
             app.UseAuthorization();
 
 
