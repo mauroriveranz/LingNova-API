@@ -140,7 +140,8 @@ namespace LingNova.Infreaestructure.Repositories
             Console.WriteLine(password);
             try
             {
-                
+                Console.WriteLine("1");
+
                 if (email == null)
                 {
                     throw new Exception("Debe llenar todos los campos");
@@ -152,6 +153,7 @@ namespace LingNova.Infreaestructure.Repositories
                     EnableSsl = true,
                     UseDefaultCredentials = false
                 };
+                Console.WriteLine("2");
                 var mensaje = new MailMessage
                 {
                     From = new MailAddress("contacto@lingnova.mriveratech.com"),
@@ -159,10 +161,11 @@ namespace LingNova.Infreaestructure.Repositories
                     Body = $"Nombre: {email.Name}\nEmail: {email.Email}\nMensaje:\n{email.Message}",
                     IsBodyHtml = false,
                 };
-
+                Console.WriteLine("3");
                 mensaje.To.Add("info@lingnova.mriveratech.com");
 
-                 smtpClient.Send(mensaje);
+                await smtpClient.SendMailAsync(mensaje);
+                Console.WriteLine("4");
                 return true;
             }
             catch (Exception ex)
