@@ -37,6 +37,7 @@ namespace LingNova.Infreaestructure.Repositories
             try
             {
                 var password = _config["Email:EmailPass2"];
+                Console.WriteLine($"PASSWORD: {password}");
                 var user = await _context.Users.FirstOrDefaultAsync(x=>x.Email == forgotPasswordVM.Email && x.IsActive == true);
                 
                 if (user == null)
@@ -78,8 +79,6 @@ namespace LingNova.Infreaestructure.Repositories
         {
             try
             {
-                var password = _config["Email:EmailPass"];
-
                 var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == loginVM.Email && x.IsActive);
                 if (user == null) {
                    throw new Exception("El usuario no existe");
@@ -137,6 +136,7 @@ namespace LingNova.Infreaestructure.Repositories
         public async Task<bool> sendEmail(EmailVM email)
         {
             var password = _config["Email:EmailPass"];
+            Console.WriteLine($"PASSWORD: {password}");
             Console.WriteLine(password);
             try
             {
