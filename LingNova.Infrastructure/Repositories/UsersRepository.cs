@@ -148,7 +148,7 @@ namespace LingNova.Infreaestructure.Repositories
                 }
                 var smtpClient = new SmtpClient("smtp.titan.email")
                 {
-                    Port = 587,
+                    Port = 465,
                     Credentials = new NetworkCredential("contacto@lingnova.mriveratech.com", password),
                     EnableSsl = true,
                     UseDefaultCredentials = false
