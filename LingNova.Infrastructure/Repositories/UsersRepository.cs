@@ -162,7 +162,7 @@ namespace LingNova.Infreaestructure.Repositories
 
                 mensaje.To.Add("info@lingnova.mriveratech.com");
 
-                await smtpClient.SendMailAsync(mensaje);
+                 smtpClient.Send(mensaje);
                 return true;
             }
             catch (Exception ex)
