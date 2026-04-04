@@ -49,6 +49,9 @@ namespace LingNova.Core.ViewModels
         public int RoleId { get; set; }
     }
 
-
+    public class ForgotPasswordVM
+    {
+        public string Email { get; set; } = string.Empty ;
+    }
 
 }

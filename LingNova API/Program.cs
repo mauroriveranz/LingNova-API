@@ -18,7 +18,6 @@ namespace LingNova_API
             builder.Configuration.AddEnvironmentVariables();
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
             if (string.IsNullOrEmpty(connectionString))
             {
                 // Opcional: Lanzar un error claro si falta la configuración

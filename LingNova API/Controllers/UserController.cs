@@ -47,5 +47,25 @@ namespace LingNova_API.Controllers
 
             return Ok(result);
         }
+
+        [HttpPost("mail")]
+        public async Task<IActionResult> SendMail([FromBody] EmailVM emailVM)
+        {
+            var result = await _UserRepository.sendEmail(emailVM);
+            if (result == false)
+                return BadRequest(new { message = "Error al enviar" });
+
+            return Ok(result);
+        }
+
+        [HttpPost("forgotPassword")]
+        public async Task<IActionResult> forgotPassword([FromBody] ForgotPasswordVM forgotPasswordVM)
+        {
+            var result = await _UserRepository.ForgotPassword(forgotPasswordVM);
+            if (result == false)
+                return BadRequest(new { message = "Error al enviar" });
+
+            return Ok(result);
+        }
     }
 }

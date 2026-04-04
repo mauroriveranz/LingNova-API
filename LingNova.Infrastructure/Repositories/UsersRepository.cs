@@ -9,6 +9,9 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,27 +28,87 @@ namespace LingNova.Infreaestructure.Repositories
             _context = context;
             _config = configuration;
         }
+        private string GenerateTempPassword()
+        {
+            return Guid.NewGuid().ToString().Substring(0, 8);
+        }
+        public async Task<bool> ForgotPassword(ForgotPasswordVM forgotPasswordVM)
+        {
+            try
+            {
+                var password = _config["Email:EmailPass2"];
+                var user = await _context.Users.FirstOrDefaultAsync(x=>x.Email == forgotPasswordVM.Email && x.IsActive == true);
+                
+                if (user == null)
+                {
+                    throw new Exception("Este usuario no existe");
+                }
+                var tempPassword = GenerateTempPassword();
+                user.Password = BCrypt.Net.BCrypt.HashPassword(tempPassword);
+                await _context.SaveChangesAsync();
+                var smtpClient = new SmtpClient("smtp.titan.email")
+                {
+                    Port = 587,
+                    Credentials = new NetworkCredential("noreply@lingnova.mriveratech.com", password),
+                    EnableSsl = true,
+                    UseDefaultCredentials = false
+                };
+                var mensaje = new MailMessage
+                {
+                    From = new MailAddress("noreply@lingnova.mriveratech.com"),
+                    Subject = $"Nuevo mensaje de noreply",
+                    Body = $"Buen dia estimado usuario\n\nSu contraseña temporal es: {tempPassword}\n Porfavor usela para ingresar a la web y cambiar su contraseña\nNo la comparta con nadie.",
+                    IsBodyHtml = false,
+                };
+
+                mensaje.To.Add(forgotPasswordVM.Email);
+
+                await smtpClient.SendMailAsync(mensaje);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+                throw new Exception(ex.Message);
+                
+            }
+        }
 
         public async Task<AuthResponseVM> Login(LoginVM loginVM)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(x=>x.Email == loginVM.Email && x.IsActive);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(loginVM.Password, user.Password))
-                return null;
-
-            return new AuthResponseVM
+            try
             {
-                Token = GenerateJwt(user),
-                UserName = user.UserName,
-                Email = user.Email,
-                RoleId = user.RoleId
-            };
+                var password = _config["Email:EmailPass"];
+
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == loginVM.Email && x.IsActive);
+                if (user == null) {
+                   throw new Exception("El usuario no existe");
+                }
+                
+                if (!BCrypt.Net.BCrypt.Verify(loginVM.Password, user.Password)){
+                    throw new Exception("La contraseña es incorrecta");
+                }
+                return new AuthResponseVM
+                {
+                    Token = GenerateJwt(user),
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    RoleId = user.RoleId
+                };
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message);
+            }
+
 
         }
 
         public async Task<AuthResponseVM> Register(RegisterVM registerVM)
         {
-            if (await _context.Users.AnyAsync(x=>x.Email == registerVM.Email))
-                return null;
+            if (await _context.Users.AnyAsync(x => x.Email == registerVM.Email))
+                throw new Exception("Este correo ya esta registrado");
 
             var user = new User
             {
@@ -54,6 +117,7 @@ namespace LingNova.Infreaestructure.Repositories
                 Password = BCrypt.Net.BCrypt.HashPassword(registerVM.Password),
                 RoleId = registerVM.RoleId,
                 DateCreated = DateTime.UtcNow,
+                IsActive = true
             };
 
             _context.Users.Add(user);
@@ -70,28 +134,68 @@ namespace LingNova.Infreaestructure.Repositories
 
         }
 
+        public async Task<bool> sendEmail(EmailVM email)
+        {
+            var password = _config["Email:EmailPass"];
+            Console.WriteLine(password);
+            try
+            {
+                
+                if (email == null)
+                {
+                    throw new Exception("Debe llenar todos los campos");
+                }
+                var smtpClient = new SmtpClient("smtp.titan.email")
+                {
+                    Port = 587,
+                    Credentials = new NetworkCredential("contacto@lingnova.mriveratech.com", password),
+                    EnableSsl = true,
+                    UseDefaultCredentials = false
+                };
+                var mensaje = new MailMessage
+                {
+                    From = new MailAddress("contacto@lingnova.mriveratech.com"),
+                    Subject = $"{email.subject}",
+                    Body = $"Nombre: {email.Name}\nEmail: {email.Email}\nMensaje:\n{email.Message}",
+                    IsBodyHtml = false,
+                };
+
+                mensaje.To.Add("info@lingnova.mriveratech.com");
+
+                await smtpClient.SendMailAsync(mensaje);
+                return true;
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.ToString());
+                throw;
+            }
+        }
+
         public async Task<AuthResponseVM> Update(UpdateUserVM updateVM)
         {
+            try
+            {
+
+
             if (updateVM == null)
-                return null;
+                throw new Exception("Debe llenar todos los campos");
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == updateVM.Email && x.IsActive);
 
             if (user == null)
-                return null;
+                throw new Exception("El usuario no existe");
 
-            bool passwordOk;
-            try
+            if (string.IsNullOrEmpty(user.Password) || !user.Password.StartsWith("$2"))
             {
-                passwordOk = BCrypt.Net.BCrypt.Verify(updateVM.Password, user.Password);
+                // No es un hash bcrypt válido
+                throw new Exception("No es un hash valido");
             }
-            catch (BCrypt.Net.SaltParseException)
-            {
-                // el password guardado en BD no tiene formato bcrypt válido
-                return null;
 
-            }
-            if (!passwordOk)
-                return null;
+            bool passwordOk = BCrypt.Net.BCrypt.Verify(updateVM.Password, user.Password);
+
+            if (passwordOk)
+                throw new Exception("No puede usar la misma contraseña que tenia");
 
 
             user.UserName = updateVM.UserName;
@@ -110,6 +214,12 @@ namespace LingNova.Infreaestructure.Repositories
                 Email = user.Email,
                 RoleId = user.RoleId
             };
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message);
+            }
         }
 
         private string GenerateJwt(User user)

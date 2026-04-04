@@ -16,5 +16,8 @@ namespace LingNova.Core.Interfaces
         Task<AuthResponseVM> Register(RegisterVM registerVM);
 
         Task<AuthResponseVM> Update(UpdateUserVM updateVM);
+        Task<bool> sendEmail(EmailVM email);
+
+        Task<bool> ForgotPassword(ForgotPasswordVM forgotPasswordVM);
     }
 }
