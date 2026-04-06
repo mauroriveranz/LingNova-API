@@ -2,6 +2,7 @@
 using LingNova.Core.Interfaces;
 using LingNova.Core.ViewModels;
 using LingNova.Infreaestructure.Data;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -144,7 +145,7 @@ namespace LingNova.Infreaestructure.Repositories
 
                 if (email == null)
                 {
-                    throw new Exception("Debe llenar todos los campos");
+                    throw new Exception("Debe llenar todos los caampos");
                 }
                 var smtpClient = new SmtpClient("smtp.titan.email")
                 {

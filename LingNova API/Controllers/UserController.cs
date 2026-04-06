@@ -30,11 +30,17 @@ namespace LingNova_API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterVM registerVM)
         {
-            var result = await _UserRepository.Register(registerVM);
-            if (result == null)
-                return BadRequest(new { message = "El email ya está registrado" });
-
+            try
+            {
+                            var result = await _UserRepository.Register(registerVM);
             return Ok(result);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new { message = ex.Message});
+            }
+
         }
 
 
