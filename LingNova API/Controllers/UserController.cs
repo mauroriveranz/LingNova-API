@@ -21,11 +21,18 @@ namespace LingNova_API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginVM loginVM)
         {
-            var result = await _UserRepository.Login(loginVM);
-            if (result == null)
-                return Unauthorized(new { message = "Credenciales incorrectas" });
+            try
+            {
+                var result = await _UserRepository.Login(loginVM);
+                return Ok(result);
 
-            return Ok(result);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new { message = ex.Message });
+            }
+
         }
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterVM registerVM)
@@ -47,11 +54,18 @@ namespace LingNova_API.Controllers
         [HttpPost("update")]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserVM updateUser)
         {
-            var result = await _UserRepository.Update(updateUser);
-            if (result == null)
-                return BadRequest(new { message = "Error al actualizar" });
+            try
+            {
+                var result = await _UserRepository.Update(updateUser);
+                return Ok(result);
 
-            return Ok(result);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new { message = ex.Message });
+            }
+
         }
 
         [HttpPost("mail")]

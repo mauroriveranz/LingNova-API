@@ -78,32 +78,28 @@ namespace LingNova.Infreaestructure.Repositories
 
         public async Task<AuthResponseVM> Login(LoginVM loginVM)
         {
-            try
-            {
-                var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == loginVM.Email && x.IsActive);
-                if (user == null) {
-                   throw new Exception("El usuario no existe");
-                }
-                
-                if (!BCrypt.Net.BCrypt.Verify(loginVM.Password, user.Password)){
-                    throw new Exception("La contraseña es incorrecta");
-                }
-                return new AuthResponseVM
-                {
-                    Token = GenerateJwt(user),
-                    UserName = user.UserName,
-                    Email = user.Email,
-                    RoleId = user.RoleId
-                };
-            }
-            catch (Exception ex)
-            {
 
-                throw new Exception(ex.Message);
+
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == loginVM.Email && x.IsActive);
+            if (user == null)
+            {
+                throw new Exception("El usuario no existe");
             }
 
+            if (!BCrypt.Net.BCrypt.Verify(loginVM.Password, user.Password))
+            {
+                throw new Exception("La contraseña es incorrecta");
+            }
+            return new AuthResponseVM
+            {
+                Token = GenerateJwt(user),
+                UserName = user.UserName,
+                Email = user.Email,
+                RoleId = user.RoleId
+            };
 
         }
+        
 
         public async Task<AuthResponseVM> Register(RegisterVM registerVM)
         {
@@ -141,7 +137,6 @@ namespace LingNova.Infreaestructure.Repositories
             Console.WriteLine(password);
             try
             {
-                Console.WriteLine("1");
 
                 if (email == null)
                 {
@@ -154,7 +149,6 @@ namespace LingNova.Infreaestructure.Repositories
                     EnableSsl = true,
                     UseDefaultCredentials = false
                 };
-                Console.WriteLine("2");
                 var mensaje = new MailMessage
                 {
                     From = new MailAddress("contacto@lingnova.mriveratech.com"),
@@ -162,11 +156,9 @@ namespace LingNova.Infreaestructure.Repositories
                     Body = $"Nombre: {email.Name}\nEmail: {email.Email}\nMensaje:\n{email.Message}",
                     IsBodyHtml = false,
                 };
-                Console.WriteLine("3");
                 mensaje.To.Add("info@lingnova.mriveratech.com");
 
                 await smtpClient.SendMailAsync(mensaje);
-                Console.WriteLine("4");
                 return true;
             }
             catch (Exception ex)
